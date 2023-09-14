@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlyrVimeoQualityChanger</title>
+
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.3/plyr.css" />
+
+    <script src="https://player.vimeo.com/api/player.js"></script>
+  </head>
+  <body>
+    <div class="plyr__video-embed" id="player">
+      <iframe
+        id="vimeo-player"
+        src="https://player.vimeo.com/video/860192161?h=c7efb6be9e"
+        width="640"
+        height="360"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <style>
+      #select {
+        background-color: black;
+        color: white;
+        border-style: none;
+      }
+    </style>
+  </body>
+  <script src="https://cdn.plyr.io/3.6.3/plyr.js"></script>
+  <script>
+    const player = new Plyr("#player", {
+      controls: [
+        "play-large",
+        "play",
+        "progress",
+        "current-time",
+        "mute",
+        "volume",
+        "captions",
+        "settings",
+        "pip",
+        "airplay",
+        "fullscreen",
+      ],
+      fullscreen: { enabled: true, fallback: true, iosNative: true },
+      playerVars: { rel: 0, showinfo: 0, ecver: 2 },
+      settings: ["quality", "speed"],
+      youtube: {
+        showinfo: 0,
+        noCookie: false,
+        rel: 0,
+        autohide: 1,
+        controls: 0,
+        iv_load_policy: 3,
+        modestbranding: 1,
+      },
+    });
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      let container = player.elements.container;
+      let menu = container.querySelector(".plyr__menu");
+      container = container.querySelector(".plyr__controls");
+      let select = document.createElement("select");
+      select.setAttribute("onchange", "changeQuantity()");
+      select.id = "select";
+      // container.appendChild(select)
+      container.insertBefore(select, menu);
+    });
+
+    // Получите iframe
+    var iframe = player.elements.wrapper.firstChild;
+
+    // Инициализируйте плеер, передав iframe
+    var vimeoPlayer = new Vimeo.Player(iframe);
+
+    // Получите доступные качества видео
+    vimeoPlayer.getQualities().then(function (qualities) {
+      select = document.querySelector("#select");
+
+      qualities.forEach((qualitie) => {
+        // Создаем новый элемент option
+        var option = document.createElement("option");
+
+        // Устанавливаем значение и текст новой опции
+        option.value = qualitie.id;
+        option.text = qualitie.label;
+
+        // Добавляем новую опцию внутрь элемента select
+        select.appendChild(option);
+      });
+    });
+
+    function changeQuantity() {
+      // Получаем ссылку на элемент select по его id
+      var select = document.getElementById("select");
+
+      // Получаем выбранное значение
+      var selectedValue = select.value;
+
+      // Вы можете использовать selectedValue для выполнения необходимых действий
+      vimeoPlayer.setQuality(selectedValue);
+    }
+  </script>
+</html>
